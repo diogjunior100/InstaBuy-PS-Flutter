@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'data/services/api_service.dart';
+import 'package:instabuy_flutter_app/data/services/banner_service.dart';
+import 'package:instabuy_flutter_app/ui/widgets/banner_carousel.dart';
+import 'data/services/product_service.dart';
 import 'ui/widgets/product_card.dart';
 
 void main() {
@@ -28,6 +30,7 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   List<Map<String, dynamic>> products = [];
+  List<Map<String, dynamic>> banners = [];
   bool loading = true;
 
   @override
@@ -37,10 +40,12 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> loadProducts() async {
-    final data = await ApiService.fetchCollectionItems();
+    final data = await ProductService.fetchCollectionItems();
+    final bannerData = await BannerService.fetchMobileBanners();
 
     setState(() {
       products = data;
+      banners = bannerData;
       loading = false;
     });
   }
@@ -51,19 +56,22 @@ class _ProductsPageState extends State<ProductsPage> {
       appBar: AppBar(title: const Text("Produtos da API")),
       body: loading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
+          : ListView(
               padding: const EdgeInsets.all(12),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final p = products[index];
-
-                return ProductCard(
-                  name: p["name"],
-                  price: p["price"],
-                  imageUrl: p["image"],
-                );
-              },
-            ),
+              children: [
+              if (banners.isNotEmpty)
+                Column(
+                  children: banners
+                      .map((banner) => BannerCarousel(imageUrl: banner['image']))
+                      .toList(),
+                ),
+              ...products.map((p) => ProductCard(
+                    name: p["name"],
+                    price: p["price"],
+                    imageUrl: p["image"],
+                  )),
+            ],
+          ),
     );
   }
 }
