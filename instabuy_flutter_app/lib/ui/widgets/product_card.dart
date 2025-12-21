@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../data/models/product_model.dart';
 
 class ProductCard extends StatelessWidget {
-  final String name;
-  final double price;
-  final String? imageUrl;
+  final ProductModel productModel;
 
   const ProductCard({
     super.key,
-    required this.name,
-    required this.price,
-    this.imageUrl,
+    required this.productModel,
   });
 
   @override
@@ -23,9 +20,9 @@ class ProductCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: imageUrl != null
+              child: productModel.imageUrl != null
                   ? Image.network(
-                      imageUrl!,
+                      productModel.imageUrl!,
                       height: 80,
                       width: 80,
                       fit: BoxFit.cover,
@@ -42,7 +39,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    productModel.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -50,7 +47,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "R\$ $price",
+                    "R\$ $productModel.price",
                     style: const TextStyle(
                       fontSize: 15,
                       color: Colors.green,

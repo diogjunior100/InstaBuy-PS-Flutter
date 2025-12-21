@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+
 import '../repositories/api_repository.dart';
+import '../models/banner_model.dart';
 
 class BannerService {
   static const String baseBannerUrl = 'https://ibassets.com.br/ib.store.banner/bnr-';
@@ -12,31 +15,36 @@ class BannerService {
     return [];
   }
 
-  static Future<List<Map<String, dynamic>>> fetchMobileBanners() async {
+  static Future<List<BannerModel>> fetchMobileBanners() async {
     try {
       final data = await ApiRepository.fetchLayout(subdomain: 'bigboxdelivery');
       final banners = extractBanners(data);
 
-      List<Map<String, dynamic>> tempList = [];
+      List<BannerModel> bannerList = [];
 
       for (var banner in banners) {
         if (banner == null) continue;
-        final isMobile = banner['is_mobile'] == true;
+
+        final bool isMobile = banner['is_mobile'] == true;
         if (!isMobile) continue;
 
-        final imageName = banner['image'];
-        final imageUrl = imageName != null ? "$baseBannerUrl$imageName" : null;
+        final String? imageName = banner['image'];
+        final String? imageUrl =
+            imageName != null ? "$baseBannerUrl$imageName" : null;
 
-        tempList.add({
-          'image': imageUrl,
-          'is_mobile': isMobile,
-        });
+        bannerList.add(
+          BannerModel(
+            imageUrl: imageUrl,     
+            isMobile: isMobile,
+          ),
+        );
       }
 
-      return tempList;
+      return bannerList;
     } catch (e) {
       print("Erro ao buscar banners: $e");
       return [];
     }
   }
 }
+

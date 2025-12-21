@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:instabuy_flutter_app/data/models/banner_model.dart';
 import 'package:instabuy_flutter_app/data/services/banner_service.dart';
 import 'package:instabuy_flutter_app/ui/widgets/banner_carousel_slider.dart';
 import 'data/services/product_service.dart';
 import 'ui/widgets/product_card.dart';
+import './data/models/product_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,8 +31,8 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  List<Map<String, dynamic>> products = [];
-  List<Map<String, dynamic>> banners = [];
+  List<ProductModel> products = [];
+  List<BannerModel> banners = [];
   bool loading = true;
 
   @override
@@ -62,15 +64,13 @@ class _ProductsPageState extends State<ProductsPage> {
               if (banners.isNotEmpty)
                 BannerCarouselSlider(
                   imageUrls: banners
-                      .map((b) => b['image'] as String? ?? '')
+                      .map((b) => b.imageUrl ?? '')
                       .where((s) => s.isNotEmpty)
                       .toList(),
                 ),
               ...products.map((p) => ProductCard(
-                    name: p["name"],
-                    price: p["price"],
-                    imageUrl: p["image"],
-                  )),
+                  productModel: p,
+              )),
             ],
           ),
     );

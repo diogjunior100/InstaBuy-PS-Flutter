@@ -1,4 +1,5 @@
 import '../repositories/api_repository.dart';
+import '../models/product_model.dart';
 
 class ProductService {
   static const String baseImageUrl = "https://ibassets.com.br/ib.item.image.medium/m-";
@@ -12,28 +13,29 @@ class ProductService {
     return [];
   }
 
-  static Future<List<Map<String, dynamic>>> fetchCollectionItems() async {
+  static Future<List<ProductModel>> fetchCollectionItems() async {
     try {
       final data = await ApiRepository.fetchLayout(subdomain: 'bigboxdelivery');
       final items = extractCollectionItems(data);
 
-      List<Map<String, dynamic>> tempList = [];
+      List<ProductModel> products = [];
 
       for (var collection in items) {
         if (collection == null || collection['items'] == null) continue;
 
         for (var item in collection['items']) {
-          tempList.add({
-            'name': item['name'],
-            'price': item['prices'][0]['price'],
-            'image': item['images'] != null && (item['images'] as List).isNotEmpty
+          products.add(ProductModel(
+            name: item['name'],
+            price: (item['prices'][0]['price'] as num).toDouble(),
+            imageUrl: item['images'] != null &&
+                    (item['images'] as List).isNotEmpty
                 ? "$baseImageUrl${item['images'][0]}"
                 : null,
-          });
+          ));
         }
       }
 
-      return tempList;
+      return products;
     } catch (e) {
       print("Erro ao buscar dados: $e");
       return [];
