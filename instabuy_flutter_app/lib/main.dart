@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instabuy_flutter_app/data/services/banner_service.dart';
-import 'package:instabuy_flutter_app/ui/widgets/banner_carousel.dart';
+import 'package:instabuy_flutter_app/ui/widgets/banner_carousel_slider.dart';
 import 'data/services/product_service.dart';
 import 'ui/widgets/product_card.dart';
 
@@ -40,11 +40,11 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> loadProducts() async {
-    final data = await ProductService.fetchCollectionItems();
+    final productData = await ProductService.fetchCollectionItems();
     final bannerData = await BannerService.fetchMobileBanners();
 
     setState(() {
-      products = data;
+      products = productData;
       banners = bannerData;
       loading = false;
     });
@@ -60,9 +60,10 @@ class _ProductsPageState extends State<ProductsPage> {
               padding: const EdgeInsets.all(12),
               children: [
               if (banners.isNotEmpty)
-                Column(
-                  children: banners
-                      .map((banner) => BannerCarousel(imageUrl: banner['image']))
+                BannerCarouselSlider(
+                  imageUrls: banners
+                      .map((b) => b['image'] as String? ?? '')
+                      .where((s) => s.isNotEmpty)
                       .toList(),
                 ),
               ...products.map((p) => ProductCard(
